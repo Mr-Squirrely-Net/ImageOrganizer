@@ -1,0 +1,23 @@
+﻿<hc:Window x:Class="ImageOrganizer.MainWindow"
+           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+           xmlns:hc="https://handyorg.github.io/handycontrol"
+           xmlns:local="clr-namespace:ImageOrganizer"
+           mc:Ignorable="d"
+           Title="MainWindow" Height="450" Width="800">
+    <Grid>
+        <Button x:Name="BrowseButton" Content="Browse For Folder" HorizontalAlignment="Right" Margin="0,43,8,0" VerticalAlignment="Top" Click="BrowseButton_OnClick"/>
+        <Button x:Name="ScanButton" Content="Scan For Images" HorizontalAlignment="Right" Margin="0,76,10,0" VerticalAlignment="Top" Click="ScanButton_OnClick"/>
+        <Label x:Name="DirLabel" Content="Pick a Folder" HorizontalAlignment="Right" Margin="0,10,10,0" VerticalAlignment="Top"/>
+        <hc:DashedBorder Margin="20,20,130,20"
+                         BorderDashThickness="2" BorderBrush="Black" BorderDashArray="3, 1" CornerRadius="0,5,0,0">
+            <!--<hc:ScrollViewer>
+                <hc:FlexPanel  Name="ImagePanel" AlignItems="FlexStart" AlignContent="SpaceBetween"/>
+            </hc:ScrollViewer>-->
+            <hc:CoverView Name="CoverPanel"/>
+        </hc:DashedBorder>
+        <Button x:Name="PopulateButton" Content="Populate Images" HorizontalAlignment="Right" Margin="0,109,8,0" VerticalAlignment="Top" Click="PopulateButton_OnClick"/>
+    </Grid>
+</hc:Window>
