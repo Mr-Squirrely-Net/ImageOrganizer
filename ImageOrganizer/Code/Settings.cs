@@ -6,5 +6,6 @@ using System.Threading.Tasks;
 
 namespace ImageOrganizer.Code {
     internal class Settings {
+
     }
 }

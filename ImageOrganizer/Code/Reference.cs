@@ -5,57 +5,38 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
-
+using System.Threading;
+using System.Windows;
+using System.Windows.Threading;
 using DuplaImage.Lib;
 using DuplaImage.Lib.ImageMagick;
 
 using LiteDB;
+using Microsoft.Toolkit.Uwp.Notifications;
+using SquirrelUtils.Sizer;
 
 namespace ImageOrganizer.Code {
-    internal static class Reference {
+    public static class Reference {
 
         //Todo: add more image types
         public static List<string> ImageTypes = new() { ".jpeg", ".jpg", ".gif", ".png", ".webp" };
-        internal static LiteDatabase Database = new($"{Environment.CurrentDirectory}/Main.db");
+        public static LiteDatabase Database = new($"{Environment.CurrentDirectory}/Main.db");
         //internal static ILiteCollection<Settings> SettingsCollection = Database.GetCollection<Settings>("settings");
-        internal static ImageHashes ImageHasher = new(new ImageMagickTransformer());
+        public static ImageHashes ImageHasher = new(new ImageMagickTransformer());
 		
-        public static bool IsImage(this FileInfo info) { return ImageTypes.Contains(info.Extension); }
-		
-        internal static bool ScanForImages(string directory) {
-			try {
-                DirectoryInfo directoryInfo = new(directory);
+        public static bool IsImage(this FileInfo info) => ImageTypes.Contains(info.Extension);
 
-				foreach (DirectoryInfo enumerateDirectory in directoryInfo.EnumerateDirectories()) {
-					DatabaseInformation dbInformation = new() {
-						Name = enumerateDirectory.Name,
-						Directory = enumerateDirectory.FullName,
-						IsComic = false,
-						IsDirectory = true
-                    };
-                    _ = AddToCollection(directoryInfo.Name, enumerateDirectory.Name, dbInformation);
-                    ScanForImages(enumerateDirectory.FullName);
-                }
+        public delegate void FinishedMessage(string message);
+        
+        public static void ScanDirectory(string directory) {
+            DirectoryScanning scanning = new(directory, new FinishedMessage(MessageCallback));
+            Thread scanThread = new(new ThreadStart(scanning.ScanDirectory));
+            scanThread.Start();
+        }
 
-                foreach (FileInfo enumerateFile in directoryInfo.EnumerateFiles()) {
-					if (!enumerateFile.IsImage()) continue;
-					DatabaseInformation dbInformation = new() {
-						Name = enumerateFile.Name,
-						Directory = enumerateFile.DirectoryName,
-						Hash = ImageHasher.CalculateDctHash(enumerateFile.FullName),
-						IsComic = false
-					};
-					_ = AddToCollection(directoryInfo.Name, enumerateFile.Name, dbInformation);
-				}
-				return true;
-            }
-			catch (LiteException e) {
-                Debug.WriteLine(e.Message);
-				return false;
-			}
-		}
+        public static void MessageCallback(string message) => new ToastContentBuilder().AddText("Finished").AddText(message).Show();
 
-		private static bool AddToCollection(string collectionName, string itemID, DatabaseInformation databaseInformation) => 
+        public static bool AddToCollection(string collectionName, string itemID, DatabaseInformation databaseInformation) => 
             Database.GetCollection<DatabaseInformation>(collectionName).Upsert(itemID, databaseInformation);
     }
 }

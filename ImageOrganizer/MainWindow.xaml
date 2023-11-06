@@ -5,18 +5,56 @@
            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
            xmlns:hc="https://handyorg.github.io/handycontrol"
            xmlns:local="clr-namespace:ImageOrganizer"
+           xmlns:code="clr-namespace:ImageOrganizer.Code"
            mc:Ignorable="d"
-           Title="MainWindow" Height="450" Width="800">
+           Title="MainWindow" Height="450" Width="800" Closing="MainWindow_OnClosing">
     <Grid>
+        <hc:NotifyIcon Text="Image Organizer" Icon="icon.ico">
+            <hc:NotifyIcon.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Command="hc:ControlCommands.PushMainWindow2Top" Header="Open"/>
+                    <MenuItem Command="hc:ControlCommands.ShutdownApp" Header="Exit"/>
+                </ContextMenu>
+            </hc:NotifyIcon.ContextMenu>
+        </hc:NotifyIcon>
+
         <Button x:Name="BrowseButton" Content="Browse For Folder" HorizontalAlignment="Right" Margin="0,43,8,0" VerticalAlignment="Top" Click="BrowseButton_OnClick"/>
         <Button x:Name="ScanButton" Content="Scan For Images" HorizontalAlignment="Right" Margin="0,76,10,0" VerticalAlignment="Top" Click="ScanButton_OnClick"/>
         <Label x:Name="DirLabel" Content="Pick a Folder" HorizontalAlignment="Right" Margin="0,10,10,0" VerticalAlignment="Top"/>
         <hc:DashedBorder Margin="20,20,130,20"
                          BorderDashThickness="2" BorderBrush="Black" BorderDashArray="3, 1" CornerRadius="0,5,0,0">
-            <!--<hc:ScrollViewer>
-                <hc:FlexPanel  Name="ImagePanel" AlignItems="FlexStart" AlignContent="SpaceBetween"/>
-            </hc:ScrollViewer>-->
-            <hc:CoverView Name="CoverPanel"/>
+            <hc:ScrollViewer>
+                <ListBox Name="ImagePanel" Style="{DynamicResource WrapPanelHorizontalListBox}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate DataType="code:CardModel">
+                            <hc:Card MaxWidth="240" BorderThickness="0" Effect="{DynamicResource EffectShadow2}" Margin="8" Footer="{Binding Footer}">
+                                <!--Card Content section template-->
+                                <Border CornerRadius="4,4,0,0" Width="160" Height="160">
+                                    <Image Name="ImageThumbnail" VerticalAlignment="Center" HorizontalAlignment="Center" Source="{Binding Content}"/>
+                                </Border>
+                                <!--Card Footer section template-->
+                                <hc:Card.FooterTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Margin="10" Width="160">
+                                            <!--Card First-level content-->
+                                            <TextBlock TextWrapping="NoWrap"  Style="{DynamicResource TextBlockLargeBold}" TextTrimming="CharacterEllipsis" 
+                                                       Text="{Binding DataContext.Header,RelativeSource={RelativeSource AncestorType=hc:Card}}" 
+                                                       HorizontalAlignment="Left"/>
+                                            <!--Card Secondary content-->
+                                            <TextBlock TextWrapping="NoWrap" Style="{DynamicResource TextBlockDefault}" TextTrimming="CharacterEllipsis" 
+                                                       Text="{Binding}" Margin="0,6,0,0"
+                                                       HorizontalAlignment="Left"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </hc:Card.FooterTemplate>
+                            </hc:Card>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </hc:ScrollViewer>
+
+            <!--<hc:CoverView Name="CoverPanel"/>-->
+
         </hc:DashedBorder>
         <Button x:Name="PopulateButton" Content="Populate Images" HorizontalAlignment="Right" Margin="0,109,8,0" VerticalAlignment="Top" Click="PopulateButton_OnClick"/>
     </Grid>
