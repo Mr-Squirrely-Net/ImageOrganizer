@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -24,10 +25,12 @@ using DuplaImage.Lib.ImageMagick;
 using HandyControl.Controls;
 using HandyControl.Data;
 using ImageOrganizer.Code;
+using ImageOrganizer.Controls;
 using LiteDB;
 using WinRT.Interop;
 using Microsoft.Toolkit.Uwp.Notifications;
 using SquirrelUtils.Sizer;
+using ScrollViewer = HandyControl.Controls.ScrollViewer;
 
 namespace ImageOrganizer {
     /// <summary>
@@ -39,12 +42,14 @@ namespace ImageOrganizer {
 
         public MainWindow() {
             InitializeComponent();
+
             ToastNotificationManagerCompat.OnActivated += toastArgs => {
                 ToastArguments args = ToastArguments.Parse(toastArgs.Argument);
                 ValueSet userInput = toastArgs.UserInput;
                 Debug.WriteLine(toastArgs.Argument);
                 Debug.WriteLine(userInput);
             };
+
         }
 
         private async void BrowseButton_OnClick(object sender, RoutedEventArgs e) {
@@ -66,77 +71,56 @@ namespace ImageOrganizer {
         }
 
         private void PopulateButton_OnClick(object sender, RoutedEventArgs e) {
+            PopulateView((string)DirLabel.Content);
+        }
 
-
-
-            //new ToastContentBuilder().AddArgument("action", "viewConversation").AddArgument("conversationID", 9813)
-            //    .AddText("Andrew sent you a picture").AddText("Check this out, The Enchantments in Washington").Show();
-
-            //Notification.Show(new Controls.AppNotification(), ShowAnimation.Fade,true);
-
-            //PopupWindow popup = new() {
-            //    MinWidth = 400,
-            //    Title = "Title",
-            //    WindowStartupLocation = WindowStartupLocation.CenterScreen,
-            //    AllowsTransparency = true,
-            //    WindowStyle = WindowStyle.None
-            //};
-            //HandyControl.Controls.TextBox text = new();
-            //popup.PopupElement = text;
-            //popup.ShowDialog();
-
-            DirectoryInfo info = new((string)DirLabel.Content);
+        private void PopulateView(string directory) {
+            DirectoryInfo info = new(directory);
             ILiteCollection<DatabaseInformation> images = Reference.Database.GetCollection<DatabaseInformation>(info.Name);
 
-            //int width = 0;
-            //int flexOrder = 0;
-
-            //UniformSpacingPanel panel = new();
-            
             foreach (DatabaseInformation dbInfo in images.FindAll()) {
-                Debug.WriteLine(dbInfo.Name);
-                Debug.WriteLine(dbInfo.IsDirectory);
-
-                if (dbInfo.IsDirectory != false) continue;
-                
-                CardModel cardModel = new() {
-                    Header = dbInfo.Name,
-                    Footer = Sizer.SuffixName($"{dbInfo.Directory}/{dbInfo.Name}"),
-                    Content = new BitmapImage(new Uri($"{dbInfo.Directory}/{dbInfo.Name}"))
-                };
+                CardModel cardModel = dbInfo.IsDirectory == true
+                    ? new CardModel {
+                        Header = dbInfo.Name,
+                        Footer = "Directory",
+                        Content = new BitmapImage(new Uri($"{Environment.CurrentDirectory}/folder_icon.png")),
+                        IsDirectory = true,
+                        IsComic = false
+                    }
+                    : new CardModel {
+                        Header = dbInfo.Name,
+                        Footer = Sizer.SuffixName($"{dbInfo.Directory}/{dbInfo.Name}"),
+                        Content = new BitmapImage(new Uri($"{dbInfo.Directory}/{dbInfo.Name}")),
+                        IsDirectory = false,
+                        IsComic = false
+                    };
                 Cards.Add(cardModel);
             }
 
             ImagePanel.ItemsSource = Cards;
             ImagePanel.UpdateLayout();
-
-            //DirectoryInfo info = new((string)DirLabel.Content);
-            //ILiteCollection<DatabaseInformation> images = Reference.Database.GetCollection<DatabaseInformation>(info.Name);
-
-            ////int width = 0;
-            ////int flexOrder = 0;
-
-            ////UniformSpacingPanel panel = new();
-
-            //foreach (DatabaseInformation dbInfo in images.FindAll()) {
-
-            //    Image image2 = new() {
-            //        Width = 100,
-            //        Height = 100,
-            //        Source = new BitmapImage(new Uri($"{dbInfo.Directory}/{dbInfo.Name}"))
-            //    };
-
-            //    CoverViewItem item = new() {
-            //        Header = image2
-            //    };
-
-            //    CoverPanel.Items.Add(item);
-            //}
         }
 
         private void MainWindow_OnClosing(object? sender, CancelEventArgs e) {
             Reference.Database.Dispose();
             ToastNotificationManagerCompat.Uninstall();
+        }
+
+        private void UIElement_OnPreviewMouseWheel(object sender, MouseWheelEventArgs e) {
+            ScrollViewer scv = (ScrollViewer)sender;
+            scv.ScrollToVerticalOffsetWithAnimation(scv.VerticalOffset - e.Delta);
+            e.Handled = true;
+        }
+
+        private void ImagePanel_OnSelectionChanged(object sender, SelectionChangedEventArgs e) {
+            InfoDrawer.IsOpen = !InfoDrawer.IsOpen;
+            InfoDrawerGrid.Children.Clear();
+            InfoDrawerGrid.Children.Add(
+                new ItemInfo {
+                    TempName = {
+                        Content = $"{((CardModel)((ListBox)sender).SelectedItem).Header}"
+                    }
+                });
         }
     }
 }

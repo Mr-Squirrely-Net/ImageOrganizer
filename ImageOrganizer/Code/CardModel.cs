@@ -5,6 +5,8 @@ namespace ImageOrganizer.Code {
         public string Header { get; set; }
         public BitmapImage Content { get; set; }
         public string Footer { get; set; }
+        public bool IsDirectory { get; set; }
+        public bool IsComic { get; set; }
     }
 
 }

@@ -19,16 +19,18 @@ namespace ImageOrganizer.Code {
     public static class Reference {
 
         //Todo: add more image types
-        public static List<string> ImageTypes = new() { ".jpeg", ".jpg", ".gif", ".png", ".webp" };
-        public static LiteDatabase Database = new($"{Environment.CurrentDirectory}/Main.db");
+        internal static List<string> ImageTypes = new() { ".jpeg", ".jpg", ".gif", ".png", ".webp" };
+        internal static LiteDatabase Database = new($"{Environment.CurrentDirectory}/Main.db");
         //internal static ILiteCollection<Settings> SettingsCollection = Database.GetCollection<Settings>("settings");
-        public static ImageHashes ImageHasher = new(new ImageMagickTransformer());
-		
+        internal static ImageHashes ImageHasher = new(new ImageMagickTransformer());
+
+        internal static string Title(string dirName) => $"Image Organizer : {dirName}";
+
         public static bool IsImage(this FileInfo info) => ImageTypes.Contains(info.Extension);
 
         public delegate void FinishedMessage(string message);
-        
-        public static void ScanDirectory(string directory) {
+
+        internal static void ScanDirectory(string directory) {
             DirectoryScanning scanning = new(directory, new FinishedMessage(MessageCallback));
             Thread scanThread = new(new ThreadStart(scanning.ScanDirectory));
             scanThread.Start();
@@ -36,7 +38,7 @@ namespace ImageOrganizer.Code {
 
         public static void MessageCallback(string message) => new ToastContentBuilder().AddText("Finished").AddText(message).Show();
 
-        public static bool AddToCollection(string collectionName, string itemID, DatabaseInformation databaseInformation) => 
+        internal static bool AddToCollection(string collectionName, string itemID, DatabaseInformation databaseInformation) => 
             Database.GetCollection<DatabaseInformation>(collectionName).Upsert(itemID, databaseInformation);
     }
 }
