@@ -5,7 +5,13 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media.Imaging;
+
+using ImageMagick.Formats;
+
 using LiteDB;
+
+using SquirrelUtils.Sizer;
 
 namespace ImageOrganizer.Code {
     public class DirectoryScanning {
@@ -27,7 +33,9 @@ namespace ImageOrganizer.Code {
                         Name = enumerateDirectory.Name,
                         Directory = enumerateDirectory.FullName,
                         IsComic = false,
-                        IsDirectory = true
+                        IsDirectory = true,
+                        Content = new Uri("pack://application:,,,/folder_icon.png"),
+                        Footer = "Directory"
                     };
                     _ = Reference.AddToCollection(directoryInfo.Name, enumerateDirectory.Name, dbInformation);
                     Reference.ScanDirectory(enumerateDirectory.FullName);
@@ -40,11 +48,12 @@ namespace ImageOrganizer.Code {
                         Directory = enumerateFile.DirectoryName,
                         IsDirectory = false,
                         Hash = Reference.ImageHasher.CalculateDctHash(enumerateFile.FullName),
-                        IsComic = false
+                        IsComic = false,
+                        Content = new Uri($"{enumerateFile.Directory}/{enumerateFile.Name}"),
+                        Footer = Sizer.SuffixName($"{enumerateFile.Directory}/{enumerateFile.Name}")
                     };
                     _ = Reference.AddToCollection(directoryInfo.Name, enumerateFile.Name, dbInformation);
                 }
-
                 _finishedMessage("Finished scanning images");
             } catch (LiteException e) {
                 Debug.WriteLine(e.Message);

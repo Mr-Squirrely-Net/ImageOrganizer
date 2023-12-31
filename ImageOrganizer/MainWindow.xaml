@@ -6,26 +6,38 @@
            xmlns:hc="https://handyorg.github.io/handycontrol"
            xmlns:local="clr-namespace:ImageOrganizer"
            xmlns:code="clr-namespace:ImageOrganizer.Code"
+           xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
            mc:Ignorable="d"
            Title="Squirrelizer" Height="720" Width="1280" Closing="MainWindow_OnClosing">
 
     <hc:Window.NonClientAreaContent>
-        <StackPanel VerticalAlignment="Stretch" Orientation="Horizontal">
-            <Menu>
-                <MenuItem Header="File">
-                    <MenuItem Header="Open Folder"/>
-                </MenuItem>
-                <MenuItem Header="Settings"/>
-                <MenuItem Header="About">
-                    <MenuItem Header="About Program"/>
-                    <MenuItem Header="Check For Update"/>
-                </MenuItem>
-            </Menu>
-            <Label x:Name="DirLabel" Content="D:\_Testing" HorizontalAlignment="Right" />
-            <Button x:Name="BrowseButton" Content="Browse For Folder" HorizontalAlignment="Right" Click="BrowseButton_OnClick"/>
-            <Button x:Name="ScanButton" Content="Scan For Images" HorizontalAlignment="Right"  Click="ScanButton_OnClick"/>
-            <Button x:Name="PopulateButton" Content="Populate Images" HorizontalAlignment="Right" Click="PopulateButton_OnClick"/>
-        </StackPanel>
+        <DockPanel LastChildFill="False">
+            <!-- Left Side Panel -->
+                <StackPanel DockPanel.Dock="Left" VerticalAlignment="Stretch" Orientation="Horizontal">
+                <Menu>
+                    <MenuItem Header="File">
+                        <MenuItem Name="MenuOpenFolder" Header="Open Folder"/>
+                    </MenuItem>
+                    <MenuItem Name="MenuSettings" Header="Settings"/>
+                    <MenuItem Header="About">
+                        <MenuItem Name="MenuAbout" Header="About Program"/>
+                        <MenuItem Name="MenuUpdate" Header="Check For Update" IsEnabled="False"/>
+                    </MenuItem>
+                </Menu>
+            </StackPanel>
+            <!-- Temp Panel -->
+            <StackPanel DockPanel.Dock="Left" VerticalAlignment="Stretch" Orientation="Horizontal">
+                <Label x:Name="DirLabel" Content="D:\_Testing" HorizontalAlignment="Right" />
+                <Button x:Name="BrowseButton" Content="Browse For Folder" HorizontalAlignment="Right" Click="BrowseButton_OnClick"/>
+                <Button x:Name="ScanButton" Content="Scan For Images" HorizontalAlignment="Right"  Click="ScanButton_OnClick"/>
+                <Button x:Name="PopulateButton" Content="Populate Images" HorizontalAlignment="Right" Click="PopulateButton_OnClick"/>
+            </StackPanel>
+            <!-- Right Side Panel -->
+            <StackPanel DockPanel.Dock="Right" VerticalAlignment="Stretch" Orientation="Horizontal">
+                <Button Name="BugButton" Content="{iconPacks:RemixIcon Kind=Bug2Line}" Style="{StaticResource ButtonDashed.Small}"
+                        hc:Poptip.Content="Submit a bug" hc:Poptip.Placement="BottomRight"/>
+            </StackPanel>
+        </DockPanel>
     </hc:Window.NonClientAreaContent>
 
     <Grid>
@@ -42,11 +54,12 @@
         </hc:Drawer>
         <hc:DashedBorder BorderThickness="2" Margin="10" BorderBrush="Black" BorderDashArray="3, 1" CornerRadius="5">
             <hc:ScrollViewer PreviewMouseWheel="UIElement_OnPreviewMouseWheel">
-                <ListBox Name="ImagePanel" Style="{DynamicResource WrapPanelHorizontalListBox}" 
-                          hc:Empty.ShowEmpty="True" SelectionChanged="ImagePanel_OnSelectionChanged">
+                <!-- SelectionChanged="ImagePanel_OnSelectionChanged" -->
+                <ListBox Name="ImagePanel" Style="{DynamicResource WrapPanelHorizontalListBox}"
+                         hc:Empty.ShowEmpty="True" SelectionChanged="ImagePanel_OnSelectionChanged">
                     <ListBox.ItemTemplate>
                         <DataTemplate DataType="code:CardModel">
-                            <hc:Card MaxWidth="240" BorderThickness="0" Effect="{DynamicResource EffectShadow2}" 
+                            <hc:Card MaxWidth="240" BorderThickness="0" Effect="{DynamicResource EffectShadow2}"
                                      Margin="8" Footer="{Binding Footer}">
                                 <!--Card Content section template-->
                                 <Border CornerRadius="4,4,0,0" Width="160" Height="160">
@@ -58,7 +71,7 @@
                                         <StackPanel Margin="10" Width="160">
                                             <!--Card First-level content-->
                                             <TextBlock TextWrapping="NoWrap"  Style="{DynamicResource TextBlockLargeBold}" TextTrimming="CharacterEllipsis" 
-                                                       Text="{Binding DataContext.Header,RelativeSource={RelativeSource AncestorType=hc:Card}}" 
+                                                       Text="{Binding DataContext.Name,RelativeSource={RelativeSource AncestorType=hc:Card}}" 
                                                        HorizontalAlignment="Left"/>
                                             <!--Card Secondary content-->
                                             <TextBlock TextWrapping="NoWrap" Style="{DynamicResource TextBlockDefault}" TextTrimming="CharacterEllipsis" 
