@@ -1,0 +1,21 @@
+﻿<hc:Window x:Class="ImageOrganizer.MainWindow"
+           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+           xmlns:hc="https://handyorg.github.io/handycontrol"
+           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+           xmlns:local="clr-namespace:ImageOrganizer"
+           mc:Ignorable="d"
+           Title="Image Organizer" Height="720" Width="1280">
+
+    <hc:Window.NonClientAreaContent>
+        <hc:SimpleStackPanel Margin="20 0 0 0" Width="400" HorizontalAlignment="Left">
+            <hc:SearchBar Name="TitleSearchBar" hc:InfoElement.Placeholder="Search" Style="{StaticResource SearchBarExtendBaseStyle}"
+                          IsRealTime="True" SearchStarted="TitleSearchBar_OnSearchStarted"/>
+        </hc:SimpleStackPanel>
+    </hc:Window.NonClientAreaContent>
+
+    <hc:SimplePanel>
+
+    </hc:SimplePanel>
+</hc:Window>
