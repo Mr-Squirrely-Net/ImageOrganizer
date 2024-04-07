@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using System.Windows.Interop;
@@ -12,13 +12,18 @@ using DuplaImage.Lib;
 using DuplaImage.Lib.ImageMagick;
 using HandyControl.Controls;
 using ImageMagick;
+using LiteDB;
 using Microsoft.Win32;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace ImageOrganizer.Code {
     public static class Reference {
 
         internal static ImageHashes ImageHasher = new(new ImageMagickTransformer());
         internal static Settings Properties = JsonSerializer.Deserialize<Settings>(new StreamReader("settings.json").ReadToEnd()) ?? throw new InvalidOperationException();
+
+        internal static ObservableCollection<string> _directoryCollection = new();
+        internal static ObservableCollection<LiteDatabase> _databaseCollection = new();
 
         public static ulong GetHash(string image) => ImageHasher.CalculateDctHash(image);
         
