@@ -13,8 +13,6 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using HandyControl.Data;
 using ImageOrganizer.Code;
-using ImageOrganizer.Views;
-
 using LiteDB;
 using static System.Windows.Application;
 
